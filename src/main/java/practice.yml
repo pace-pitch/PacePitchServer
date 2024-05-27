@@ -1,0 +1,108 @@
+openapi: 3.0.1
+info:
+  title: PacaPitch
+  description: API for PacePitch
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /session/{videoId}/upload/info:
+    post:
+      summary: Update a video information
+      description: update video information
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePitchingSessionRequest'
+
+  /create/session:
+    post:
+      summary: Create a new pitching session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePitchingSessionRequest'
+      responses:
+        '200':
+          description: Successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PitchingSessionEntity'
+  /session/{sessionId}/upload/video:
+    post:
+      summary: Upload a video file
+      description: Upload a video file to MinIO and save the URL in the database
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the session
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The video file to upload
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: File upload failed
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    CreatePitchingSessionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        memo:
+          type: string
+      required:
+        - title
+    PitchingSessionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        memo:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+      required:
+        - title

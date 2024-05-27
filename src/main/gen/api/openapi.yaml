@@ -1,0 +1,53 @@
+openapi: 3.0.1
+info:
+  description: API for uploading videos to MinIO and generating presigned URLs
+  title: Video Upload API
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+paths:
+  /session/{sessionId}/records/new:
+    post:
+      description: Upload a video file to MinIO and save the URL in the database
+      parameters:
+      - description: The ID of the session
+        explode: false
+        in: path
+        name: sessionId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/_session__sessionId__records_new_post_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: File uploaded successfully
+        "500":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: File upload failed
+      summary: Upload a video file
+      x-content-type: multipart/form-data
+      x-accepts: application/json
+components:
+  schemas:
+    _session__sessionId__records_new_post_request:
+      properties:
+        file:
+          description: The video file to upload
+          format: binary
+          type: string
+      type: object
+
