@@ -6,27 +6,27 @@ info:
 servers:
   - url: http://localhost:8080
 paths:
-  /session/{videoId}/upload/info:
-    post:
-      summary: Update a video information
-      description: update video information
-      parameters:
-        - name: videoId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the session
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateVideoEntity'
-      responses:
-        '200':
-
+#  /session/{videoId}/upload/info:
+#    post:
+#      summary: Update a video information
+#      description: update video information
+#      parameters:
+#        - name: videoId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#            format: uuid
+#          description: The ID of the session
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref:
+#      responses:
+#        '200':
+#
 
   /create/session:
     post:
