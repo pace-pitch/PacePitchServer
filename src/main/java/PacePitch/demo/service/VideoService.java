@@ -64,4 +64,13 @@ public class VideoService {
         pitch.setMinioUrl(presignedUrl);
         repository.save(pitch);
     }
+
+    // id를 통한 단일 비디오 조회 메서드
+    public String getVideoUrl(UUID id) {
+        IndividualPitchEntity video = getVideo(id);
+        return video != null ? video.getMinioUrl() : null;
+    }
+    private IndividualPitchEntity getVideo(UUID id) {
+        return repository.findById(id).orElse(null);
+    }
 }

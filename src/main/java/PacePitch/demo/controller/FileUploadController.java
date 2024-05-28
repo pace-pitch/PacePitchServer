@@ -26,4 +26,11 @@ public class FileUploadController {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
         }
     }
+
+    // 특정 비디오 파일 조회 엔드포인트
+    @GetMapping("/video/{videoId}")
+    public ResponseEntity<String> getVideo(@PathVariable("videoId") UUID videoId) {
+        String videoUrl = videoService.getVideoUrl(videoId);
+        return ResponseEntity.ok(videoUrl);
+    }
 }
