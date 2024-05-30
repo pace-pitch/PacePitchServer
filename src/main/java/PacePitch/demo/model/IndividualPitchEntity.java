@@ -30,9 +30,11 @@ public class IndividualPitchEntity {
     private long createdAt;
     private long updatedAt;
 
-    // MinIO URL 필드 추가
+    @Column(length = 1024)
     private String minioUrl;
 
+    @Column(length = 1024)
+    private String thumbnailUrl;
     @PrePersist
     protected void onCreate() {
         long now = Instant.now().getEpochSecond();

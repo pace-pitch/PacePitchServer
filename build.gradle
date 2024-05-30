@@ -19,6 +19,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -31,6 +32,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'io.minio:minio:8.4.0'
+//	implementation 'com.github.sandec:jave2:6.0.2'
+	implementation 'org.jcodec:jcodec:0.2.5'
+	implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
 }
 
 
