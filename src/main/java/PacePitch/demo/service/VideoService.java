@@ -19,11 +19,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Files;
-
-import javax.imageio.ImageIO;
 
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -118,10 +115,25 @@ public class VideoService {
         IndividualPitchEntity video = getVideo(id);
         return video != null ? video.getMinioUrl() : null;
     }
+
+    // id를 통한 썸네일 URL 조회 메서드
+    public String getVideoThumb(UUID id) {
+        IndividualPitchEntity video = getVideo(id);
+        return (video != null && video.getThumbnailUrl() != null && !video.getThumbnailUrl().isEmpty()) ? video.getThumbnailUrl() : null;
+    }
+
+    // id를 통한 메모 조회 메서드
+    public String getMemo(UUID id) {
+        IndividualPitchEntity video = getVideo(id);
+        return (video != null && video.getMemo() != null && !video.getMemo().isEmpty()) ? video.getMemo() : null;
+    }
+
+
     private IndividualPitchEntity getVideo(UUID id) {
         return repository.findById(id).orElse(null);
     }
 
+    // FFmpeg로 썸네일 생성
     private void generateThumbnail(File videoFile, File thumbnailFile) throws IOException {
         FFmpeg ffmpeg = new FFmpeg("/opt/homebrew/bin/ffmpeg"); // ffmpeg 실행 파일 경로
         FFprobe ffprobe = new FFprobe("/opt/homebrew/bin/ffprobe"); // ffprobe 실행 파일 경로
@@ -137,5 +149,10 @@ public class VideoService {
 
         FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
         executor.createJob(builder).run();
+    }
+
+    // 세션에 대한 대표 썸네일과 제목 조회
+    public Object[] getOldestThumbnailUrlAndSessionTitle(UUID sessionId) {
+        return repository.findOldestThumbnailUrlAndSessionTitle(sessionId);
     }
 }

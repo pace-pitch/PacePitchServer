@@ -27,4 +27,5 @@ public class IndividualPitchController {
             return ResponseEntity.badRequest().build();
         }
     }
+
 }
