@@ -72,6 +72,96 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IndividualPitchEntity'
+  /session/{sessionId}/upload/thumb:
+    get:
+      summary: Get the oldes thumbnail URL and session title
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the session
+      responses:
+        '200':
+          description: The oldest thumbnail URL and session title
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  thumbnailUrl:
+                    type: string
+                    example: "https://example.com/thumbnail.png"
+                  sessionTitle:
+                    type: string
+                    example: "Session Title"
+        '500':
+          description: Failed to retrieve thumbnail URL and session title
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to retrieve thumbnail URL and session title: error message"
+  /session/upload/thumb/{videoId}:
+    get:
+      summary: Get the thumbnail URL and memo for a specific video
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the video
+      responses:
+        '200':
+          description: The thumbnail URL and memo for the video
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  thumbnailUrl:
+                    type: string
+                    example: "https://example.com/thumbnail.png"
+                  memo:
+                    type: string
+                    example: "This is a memo"
+        '500':
+          description: Failed to retrieve thumbnail URL and memo
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to retrieve thumbnail URL and memo: error message"
+  /session/upload/video/{videoId}:
+    get:
+      summary: Get the video URL for a specific video
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the video
+      responses:
+        '200':
+          description: The video URL
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "https://example.com/video.mp4"
+        '500':
+          description: Failed to retrieve video URL
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Failed to retrieve video URL: error message"
 
 
 components:
