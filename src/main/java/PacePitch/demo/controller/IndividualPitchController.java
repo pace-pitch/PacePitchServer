@@ -1,9 +1,8 @@
 package PacePitch.demo.controller;
 
-import PacePitch.demo.model.IndividualPitchEntity;
-import PacePitch.demo.repository.IndividualPitchRepository;
+import PacePitch.demo.dto.IndividualPitchDTO;
+import PacePitch.demo.dto.response.IndividualPitchResponse;
 import PacePitch.demo.service.IndividualPitchService;
-import PacePitch.demo.service.PitchingSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,21 +10,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/session")
+@RequestMapping("/api/session")
 public class IndividualPitchController {
 
     @Autowired
     private IndividualPitchService service;
 
-
-    @PostMapping("/{videoId}/upload/info")
-    public ResponseEntity<IndividualPitchEntity> updateIndividualPitch(@PathVariable UUID videoId, @RequestBody IndividualPitchEntity individualPitch) {
+    @PostMapping("/{sessionId}/pitch")
+    public ResponseEntity<IndividualPitchResponse> createPitch(@PathVariable UUID sessionId, @RequestBody IndividualPitchDTO individualPitchDTO) {
         try {
-            IndividualPitchEntity updatedIndividualPitch = service.updatePitch(videoId, individualPitch);
-            return ResponseEntity.ok(updatedIndividualPitch);
-        } catch (IllegalStateException e) {
+            IndividualPitchResponse newPitch = service.createPitch(sessionId, individualPitchDTO);
+            return ResponseEntity.ok(newPitch);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
+    @PutMapping("/pitch/{pitchId}")
+    public ResponseEntity<IndividualPitchResponse> updatePitch(@PathVariable UUID pitchId, @RequestBody IndividualPitchDTO individualPitchDTO) {
+        try {
+            IndividualPitchResponse updatedPitch = service.updatePitch(pitchId, individualPitchDTO);
+            return ResponseEntity.ok(updatedPitch);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

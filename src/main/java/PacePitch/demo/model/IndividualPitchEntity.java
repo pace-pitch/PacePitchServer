@@ -1,17 +1,16 @@
 package PacePitch.demo.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Data
-@NoArgsConstructor  // 기본 생성자
-@AllArgsConstructor  //  모든 필드를 파라미터로 받는 생성자
+@Getter
+@NoArgsConstructor
 @Table(name = "individual_pitches")
 public class IndividualPitchEntity {
 
@@ -21,12 +20,12 @@ public class IndividualPitchEntity {
 
     @ManyToOne
     @JoinColumn(name = "session_id")
-    private PitchingSessionEntity session;
+    private PitchingSessionEntity session;  // This establishes the many-to-one relationship
 
     private double velocity;
-    private String pitchType;
+    private PitchType pitchType;
     private String memo;
-    private String throwingHand;
+    private ThrowingHand throwingHand;
     private long createdAt;
     private long updatedAt;
 
@@ -35,15 +34,28 @@ public class IndividualPitchEntity {
 
     @Column(length = 1024)
     private String thumbnailUrl;
-    @PrePersist
-    protected void onCreate() {
+
+    public IndividualPitchEntity(double velocity, PitchType pitchType, String memo, ThrowingHand throwingHand, PitchingSessionEntity session) {
+        this.velocity = velocity;
+        this.pitchType = pitchType;
+        this.memo = memo;
+        this.throwingHand = throwingHand;
+        this.session = session;
         long now = Instant.now().getEpochSecond();
-        createdAt = now;
-        updatedAt = now;
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = Instant.now().getEpochSecond();
+        this.updatedAt = Instant.now().getEpochSecond();
+    }
+
+    public void updatePitch(double velocity, PitchType pitchType, String memo, ThrowingHand throwingHand) {
+        this.velocity = velocity;
+        this.pitchType = pitchType;
+        this.memo = memo;
+        this.throwingHand = throwingHand;
+        onUpdate();
     }
 }

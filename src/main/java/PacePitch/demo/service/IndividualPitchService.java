@@ -1,5 +1,7 @@
 package PacePitch.demo.service;
 
+import PacePitch.demo.dto.IndividualPitchDTO;
+import PacePitch.demo.dto.response.IndividualPitchResponse;
 import PacePitch.demo.model.IndividualPitchEntity;
 import PacePitch.demo.model.PitchingSessionEntity;
 import PacePitch.demo.repository.IndividualPitchRepository;
@@ -13,29 +15,50 @@ import java.util.UUID;
 @Service
 public class IndividualPitchService {
     @Autowired
-    private IndividualPitchRepository repository;
+    private IndividualPitchRepository pitchRepository;
+    @Autowired
+    private PitchingSessionRepository sessionRepository;
 
-//    public IndividualPitchEntity save_pitch(UUID sessionId, IndividualPitchEntity individualPitch) {
-//        Optional<PitchingSessionEntity> session = pitchingSessionReposity.findById(sessionId);
-//        if (session.isPresent()) {
-//            individualPitch.setSession(session.get());
-//            return repository.save(individualPitch);
-//        } else {
-//            throw new IllegalArgumentException("Invalid session ID");
-//        }
-//    }
-    public IndividualPitchEntity updatePitch(UUID videoId, IndividualPitchEntity pitchData) {
-        Optional<IndividualPitchEntity> optionalPitch = repository.findById(videoId);
+    public IndividualPitchResponse createPitch(UUID sessionId, IndividualPitchDTO pitchDTO) {
+        Optional<PitchingSessionEntity> sessionOptional = sessionRepository.findById(sessionId);
+        if (sessionOptional.isEmpty()) {
+            throw new IllegalArgumentException("Invalid session ID: " + sessionId);
+        }
+        PitchingSessionEntity session = sessionOptional.get();
+
+        IndividualPitchEntity newPitch = new IndividualPitchEntity(
+                pitchDTO.getVelocity(),
+                pitchDTO.getPitchType(),
+                pitchDTO.getMemo(),
+                pitchDTO.getThrowingHand(),
+                session
+        );
+        pitchRepository.save(newPitch);
+
+        return new IndividualPitchResponse(
+                newPitch.getId(),
+                newPitch.getVelocity(),
+                newPitch.getPitchType(),
+                newPitch.getMemo(),
+                newPitch.getThrowingHand()
+        );
+    }
+
+    public IndividualPitchResponse updatePitch(UUID pitchId, IndividualPitchDTO pitchDTO) {
+        Optional<IndividualPitchEntity> optionalPitch = pitchRepository.findById(pitchId);
         if (optionalPitch.isPresent()) {
             IndividualPitchEntity existingPitch = optionalPitch.get();
-            existingPitch.setVelocity(pitchData.getVelocity());
-            existingPitch.setPitchType(pitchData.getPitchType());
-            existingPitch.setMemo(pitchData.getMemo());
-            existingPitch.setThrowingHand(pitchData.getThrowingHand());
-            existingPitch.setUpdatedAt(System.currentTimeMillis() / 1000);  // 현재 시간을 초 단위로 저장
-            return repository.save(existingPitch);
+            existingPitch.updatePitch(pitchDTO.getVelocity(), pitchDTO.getPitchType(), pitchDTO.getMemo(), pitchDTO.getThrowingHand());
+            pitchRepository.save(existingPitch);
+            return new IndividualPitchResponse(
+                    existingPitch.getId(),
+                    existingPitch.getVelocity(),
+                    existingPitch.getPitchType(),
+                    existingPitch.getMemo(),
+                    existingPitch.getThrowingHand()
+            );
         } else {
-            throw new IllegalArgumentException("Invalid video ID");
+            throw new IllegalArgumentException("Invalid pitch ID");
         }
     }
 }

@@ -12,7 +12,7 @@ public class PitchingSessionService {
     private PitchingSessionRepository repository;
 
     // save_session()는 PitchingSessionEntity 객체를 db에 저장
-    public PitchingSessionEntity save_session(PitchingSessionEntity session) {
+    public PitchingSessionEntity saveSession(PitchingSessionEntity session) {
         // JPA의 save 메서드를 호출하여, 새로운 엔티티를 데이터베이스에 삽입하거나 기존 엔티티를 업데이트
         return repository.save(session);
     }

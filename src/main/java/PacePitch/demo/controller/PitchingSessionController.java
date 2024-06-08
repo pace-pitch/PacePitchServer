@@ -16,7 +16,7 @@ public class PitchingSessionController {
     // HTTP POST 요청을 처리하는 메서드임을 나타낸다.
     @PostMapping
     public ResponseEntity<PitchingSessionEntity> createSession(@RequestBody PitchingSessionEntity session) {
-        PitchingSessionEntity savedSession = service.save_session(session);
+        PitchingSessionEntity savedSession = service.saveSession(session);
         return ResponseEntity.ok(savedSession);
     }
 }
