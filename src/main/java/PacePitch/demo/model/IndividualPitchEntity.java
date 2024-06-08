@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "individual_pitches")
 public class IndividualPitchEntity {
@@ -20,7 +21,7 @@ public class IndividualPitchEntity {
 
     @ManyToOne
     @JoinColumn(name = "session_id")
-    private PitchingSessionEntity session;  // This establishes the many-to-one relationship
+    private PitchingSessionEntity session;
 
     private double velocity;
     private PitchType pitchType;
@@ -46,16 +47,16 @@ public class IndividualPitchEntity {
         this.updatedAt = now;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = Instant.now().getEpochSecond();
-    }
-
     public void updatePitch(double velocity, PitchType pitchType, String memo, ThrowingHand throwingHand) {
         this.velocity = velocity;
         this.pitchType = pitchType;
         this.memo = memo;
         this.throwingHand = throwingHand;
-        onUpdate();
+        this.updatedAt = Instant.now().getEpochSecond();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = Instant.now().getEpochSecond();
     }
 }

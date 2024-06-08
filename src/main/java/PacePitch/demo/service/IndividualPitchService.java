@@ -6,6 +6,7 @@ import PacePitch.demo.model.IndividualPitchEntity;
 import PacePitch.demo.model.PitchingSessionEntity;
 import PacePitch.demo.repository.IndividualPitchRepository;
 import PacePitch.demo.repository.PitchingSessionRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,21 @@ public class IndividualPitchService {
 
     public IndividualPitchResponse createPitch(UUID sessionId, IndividualPitchDTO pitchDTO) {
         Optional<PitchingSessionEntity> sessionOptional = sessionRepository.findById(sessionId);
+        IndividualPitchEntity newPitch = getIndividualPitchEntity(sessionId, pitchDTO, sessionOptional);
+
+        pitchRepository.save(newPitch);
+
+        return new IndividualPitchResponse(
+                newPitch.getId(),
+                newPitch.getVelocity(),
+                newPitch.getPitchType(),
+                newPitch.getMemo(),
+                newPitch.getThrowingHand()
+        );
+    }
+
+    @NotNull
+    private static IndividualPitchEntity getIndividualPitchEntity(UUID sessionId, IndividualPitchDTO pitchDTO, Optional<PitchingSessionEntity> sessionOptional) {
         if (sessionOptional.isEmpty()) {
             throw new IllegalArgumentException("Invalid session ID: " + sessionId);
         }
@@ -33,15 +49,8 @@ public class IndividualPitchService {
                 pitchDTO.getThrowingHand(),
                 session
         );
-        pitchRepository.save(newPitch);
-
-        return new IndividualPitchResponse(
-                newPitch.getId(),
-                newPitch.getVelocity(),
-                newPitch.getPitchType(),
-                newPitch.getMemo(),
-                newPitch.getThrowingHand()
-        );
+        session.addPitch(newPitch);
+        return newPitch;
     }
 
     public IndividualPitchResponse updatePitch(UUID pitchId, IndividualPitchDTO pitchDTO) {
