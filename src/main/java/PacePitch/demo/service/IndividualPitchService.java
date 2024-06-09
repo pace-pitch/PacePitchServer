@@ -28,13 +28,7 @@ public class IndividualPitchService {
 
         pitchRepository.save(newPitch);
 
-        return new IndividualPitchResponse(
-                newPitch.getId(),
-                newPitch.getVelocity(),
-                newPitch.getPitchType(),
-                newPitch.getMemo(),
-                newPitch.getThrowingHand()
-        );
+        return convertToIndividualPitchResponse(newPitch);
     }
 
     @NotNull
@@ -61,13 +55,7 @@ public class IndividualPitchService {
             IndividualPitchEntity existingPitch = optionalPitch.get();
             existingPitch.updatePitch(pitchDTO.getVelocity(), pitchDTO.getPitchType(), pitchDTO.getMemo(), pitchDTO.getThrowingHand());
             pitchRepository.save(existingPitch);
-            return new IndividualPitchResponse(
-                    existingPitch.getId(),
-                    existingPitch.getVelocity(),
-                    existingPitch.getPitchType(),
-                    existingPitch.getMemo(),
-                    existingPitch.getThrowingHand()
-            );
+            return convertToIndividualPitchResponse(existingPitch);
         } else {
             throw new IllegalArgumentException("Invalid pitch ID");
         }
@@ -75,23 +63,22 @@ public class IndividualPitchService {
 
     public Page<IndividualPitchResponse> getPitchesBySession(UUID sessionId, int page, int size) {
         Page<IndividualPitchEntity> pitches = pitchRepository.findBySessionId(sessionId, PageRequest.of(page, size));
-        return pitches.map(pitch -> new IndividualPitchResponse(
-                pitch.getId(),
-                pitch.getVelocity(),
-                pitch.getPitchType(),
-                pitch.getMemo(),
-                pitch.getThrowingHand()
-        ));
+        return pitches.map(this::convertToIndividualPitchResponse);
     }
 
     public Optional<IndividualPitchResponse> getPitchById(UUID pitchId) {
         return pitchRepository.findById(pitchId)
-                .map(pitch -> new IndividualPitchResponse(
-                        pitch.getId(),
-                        pitch.getVelocity(),
-                        pitch.getPitchType(),
-                        pitch.getMemo(),
-                        pitch.getThrowingHand()
-                ));
+                .map(this::convertToIndividualPitchResponse);
+    }
+
+    private IndividualPitchResponse convertToIndividualPitchResponse(IndividualPitchEntity pitch) {
+        return new IndividualPitchResponse(
+                pitch.getId(),
+                pitch.getVelocity(),
+                pitch.getPitchType(),
+                pitch.getMemo(),
+                pitch.getThrowingHand(),
+                pitch.getVideoUrl()
+        );
     }
 }

@@ -31,7 +31,7 @@ public class IndividualPitchEntity {
     private long updatedAt;
 
     @Column(length = 1024)
-    private String minioUrl;
+    private String videoUrl;
 
     @Column(length = 1024)
     private String thumbnailUrl;
@@ -48,9 +48,9 @@ public class IndividualPitchEntity {
         this.updatedAt = now;
     }
 
-    public IndividualPitchEntity(PitchingSessionEntity session, String minioUrl, String thumbnailUrl) {
+    public IndividualPitchEntity(PitchingSessionEntity session, String videoUrl, String thumbnailUrl) {
         this.session = session;
-        this.minioUrl = minioUrl;
+        this.videoUrl = videoUrl;
         this.thumbnailUrl = thumbnailUrl;
         long now = Instant.now().getEpochSecond();
         this.createdAt = now;

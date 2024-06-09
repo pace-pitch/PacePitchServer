@@ -10,4 +10,5 @@ public class IndividualPitchDTO {
     private PitchType pitchType;
     private String memo;
     private ThrowingHand throwingHand;
+    private String videoUrl;
 }

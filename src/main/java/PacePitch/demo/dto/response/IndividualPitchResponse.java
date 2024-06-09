@@ -15,5 +15,6 @@ public class IndividualPitchResponse {
     private PitchType pitchType;
     private String memo;
     private ThrowingHand throwingHand;
+    private String videoUrl;
 }
 

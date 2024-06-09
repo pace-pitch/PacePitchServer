@@ -117,7 +117,7 @@ public class VideoService {
     // id를 통한 단일 비디오 조회 메서드
     public String getVideoUrl(UUID id) {
         IndividualPitchEntity video = getVideo(id);
-        return video != null ? video.getMinioUrl() : null;
+        return video != null ? video.getVideoUrl() : null;
     }
 
     // id를 통한 썸네일 URL 조회 메서드
