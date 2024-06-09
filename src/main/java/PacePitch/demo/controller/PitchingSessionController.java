@@ -1,32 +1,41 @@
 package PacePitch.demo.controller;
 
 import PacePitch.demo.dto.request.CreatePitchingSessionRequest;
-import PacePitch.demo.model.PitchingSessionEntity;
+import PacePitch.demo.dto.response.PitchingSessionResponse;
 import PacePitch.demo.service.PitchingSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/api/create/session")
+@RequestMapping("/api/sessions")
 public class PitchingSessionController {
 
     @Autowired
     private PitchingSessionService service;
 
     @PostMapping
-    public ResponseEntity<PitchingSessionEntity> createSession(@RequestBody CreatePitchingSessionRequest session) {
-        PitchingSessionEntity savedSession = service.saveSession(session);
-        return ResponseEntity.ok(savedSession);
+    public ResponseEntity<PitchingSessionResponse> createSession(@RequestBody CreatePitchingSessionRequest request) {
+        PitchingSessionResponse response = service.createSession(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<Page<PitchingSessionEntity>> getSessions(
+    public ResponseEntity<Page<PitchingSessionResponse>> getSessions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<PitchingSessionEntity> sessions = service.getSessions(page, size);
-        return ResponseEntity.ok(sessions);
+        Page<PitchingSessionResponse> responses = service.getSessions(page, size);
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PitchingSessionResponse> getSessionById(@PathVariable UUID id) {
+        return service.getSessionById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
