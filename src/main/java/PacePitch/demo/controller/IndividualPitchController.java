@@ -4,6 +4,7 @@ import PacePitch.demo.dto.IndividualPitchDTO;
 import PacePitch.demo.dto.response.IndividualPitchResponse;
 import PacePitch.demo.service.IndividualPitchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,5 +35,15 @@ public class IndividualPitchController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/{sessionId}/pitches")
+    public ResponseEntity<Page<IndividualPitchResponse>> getPitchesBySession(
+            @PathVariable UUID sessionId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<IndividualPitchResponse> pitches = service.getPitchesBySession(sessionId, page, size);
+        return ResponseEntity.ok(pitches);
     }
 }

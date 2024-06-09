@@ -8,6 +8,8 @@ import PacePitch.demo.repository.IndividualPitchRepository;
 import PacePitch.demo.repository.PitchingSessionRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -69,5 +71,16 @@ public class IndividualPitchService {
         } else {
             throw new IllegalArgumentException("Invalid pitch ID");
         }
+    }
+
+    public Page<IndividualPitchResponse> getPitchesBySession(UUID sessionId, int page, int size) {
+        Page<IndividualPitchEntity> pitches = pitchRepository.findBySessionId(sessionId, PageRequest.of(page, size));
+        return pitches.map(pitch -> new IndividualPitchResponse(
+                pitch.getId(),
+                pitch.getVelocity(),
+                pitch.getPitchType(),
+                pitch.getMemo(),
+                pitch.getThrowingHand()
+        ));
     }
 }
