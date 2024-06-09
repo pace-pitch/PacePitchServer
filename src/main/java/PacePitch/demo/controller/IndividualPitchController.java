@@ -11,30 +11,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/session")
+@RequestMapping("/api/sessions")
 public class IndividualPitchController {
 
     @Autowired
     private IndividualPitchService service;
 
-    @PostMapping("/{sessionId}/pitch")
+    @PostMapping("/{sessionId}/pitches")
     public ResponseEntity<IndividualPitchResponse> createPitch(@PathVariable UUID sessionId, @RequestBody IndividualPitchDTO individualPitchDTO) {
-        try {
-            IndividualPitchResponse newPitch = service.createPitch(sessionId, individualPitchDTO);
-            return ResponseEntity.ok(newPitch);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PutMapping("/pitch/{pitchId}")
-    public ResponseEntity<IndividualPitchResponse> updatePitch(@PathVariable UUID pitchId, @RequestBody IndividualPitchDTO individualPitchDTO) {
-        try {
-            IndividualPitchResponse updatedPitch = service.updatePitch(pitchId, individualPitchDTO);
-            return ResponseEntity.ok(updatedPitch);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        IndividualPitchResponse newPitch = service.createPitch(sessionId, individualPitchDTO);
+        return ResponseEntity.ok(newPitch);
     }
 
     @GetMapping("/{sessionId}/pitches")
@@ -47,10 +33,20 @@ public class IndividualPitchController {
         return ResponseEntity.ok(pitches);
     }
 
-    @GetMapping("/{pitchId}")
-    public ResponseEntity<IndividualPitchResponse> getPitchById(@PathVariable UUID pitchId) {
+    @GetMapping("/{sessionId}/pitches/{pitchId}")
+    public ResponseEntity<IndividualPitchResponse> getPitchByIdWithinSession(@PathVariable UUID sessionId, @PathVariable UUID pitchId) {
         return service.getPitchById(pitchId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{sessionId}/pitches/{pitchId}")
+    public ResponseEntity<IndividualPitchResponse> updatePitch(@PathVariable UUID sessionId, @PathVariable UUID pitchId, @RequestBody IndividualPitchDTO individualPitchDTO) {
+        try {
+            IndividualPitchResponse updatedPitch = service.updatePitch(pitchId, individualPitchDTO);
+            return ResponseEntity.ok(updatedPitch);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
