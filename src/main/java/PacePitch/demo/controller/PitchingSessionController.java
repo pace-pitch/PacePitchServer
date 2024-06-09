@@ -1,5 +1,6 @@
 package PacePitch.demo.controller;
 
+import PacePitch.demo.dto.request.CreatePitchingSessionRequest;
 import PacePitch.demo.model.PitchingSessionEntity;
 import PacePitch.demo.service.PitchingSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,8 @@ public class PitchingSessionController {
     @Autowired
     private PitchingSessionService service;
 
-    // HTTP POST 요청을 처리하는 메서드임을 나타낸다.
     @PostMapping
-    public ResponseEntity<PitchingSessionEntity> createSession(@RequestBody PitchingSessionEntity session) {
+    public ResponseEntity<PitchingSessionEntity> createSession(@RequestBody CreatePitchingSessionRequest session) {
         PitchingSessionEntity savedSession = service.saveSession(session);
         return ResponseEntity.ok(savedSession);
     }

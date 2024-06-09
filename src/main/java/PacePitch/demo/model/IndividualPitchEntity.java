@@ -36,12 +36,22 @@ public class IndividualPitchEntity {
     @Column(length = 1024)
     private String thumbnailUrl;
 
+    // Existing constructor
     public IndividualPitchEntity(double velocity, PitchType pitchType, String memo, ThrowingHand throwingHand, PitchingSessionEntity session) {
         this.velocity = velocity;
         this.pitchType = pitchType;
         this.memo = memo;
         this.throwingHand = throwingHand;
         this.session = session;
+        long now = Instant.now().getEpochSecond();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    public IndividualPitchEntity(PitchingSessionEntity session, String minioUrl, String thumbnailUrl) {
+        this.session = session;
+        this.minioUrl = minioUrl;
+        this.thumbnailUrl = thumbnailUrl;
         long now = Instant.now().getEpochSecond();
         this.createdAt = now;
         this.updatedAt = now;
