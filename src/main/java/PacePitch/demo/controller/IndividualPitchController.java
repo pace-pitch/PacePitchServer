@@ -46,4 +46,11 @@ public class IndividualPitchController {
         Page<IndividualPitchResponse> pitches = service.getPitchesBySession(sessionId, page, size);
         return ResponseEntity.ok(pitches);
     }
+
+    @GetMapping("/{pitchId}")
+    public ResponseEntity<IndividualPitchResponse> getPitchById(@PathVariable UUID pitchId) {
+        return service.getPitchById(pitchId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

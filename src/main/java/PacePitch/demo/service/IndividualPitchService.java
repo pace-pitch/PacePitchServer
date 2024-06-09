@@ -83,4 +83,15 @@ public class IndividualPitchService {
                 pitch.getThrowingHand()
         ));
     }
+
+    public Optional<IndividualPitchResponse> getPitchById(UUID pitchId) {
+        return pitchRepository.findById(pitchId)
+                .map(pitch -> new IndividualPitchResponse(
+                        pitch.getId(),
+                        pitch.getVelocity(),
+                        pitch.getPitchType(),
+                        pitch.getMemo(),
+                        pitch.getThrowingHand()
+                ));
+    }
 }
