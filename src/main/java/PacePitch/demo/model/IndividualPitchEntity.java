@@ -40,4 +40,16 @@ public class IndividualPitchEntity extends BaseTimeEntity {
         this.throwingHand = throwingHand;
         this.session = session;
     }
+
+    public void updatePitch(double velocity, PitchType pitchType, String memo, ThrowingHand throwingHand) {
+        this.velocity = velocity;
+        this.pitchType = pitchType;
+        this.memo = memo;
+        this.throwingHand = throwingHand;
+        onUpdate();
+    }
+
+    protected void onUpdate() {
+        super.onUpdate();
+    }
 }
