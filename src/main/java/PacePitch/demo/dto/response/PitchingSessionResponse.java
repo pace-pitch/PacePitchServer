@@ -10,4 +10,6 @@ public class PitchingSessionResponse {
     private UUID id;
     private String title;
     private String memo;
+    private long created_at;
+    private long updated_at;
 }

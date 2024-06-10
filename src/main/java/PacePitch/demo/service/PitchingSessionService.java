@@ -24,16 +24,16 @@ public class PitchingSessionService {
                 request.getMemo()
         );
         PitchingSessionEntity savedSession = repository.save(newSession);
-        return new PitchingSessionResponse(savedSession.getId(), savedSession.getTitle(), savedSession.getMemo());
+        return new PitchingSessionResponse(savedSession.getId(), savedSession.getTitle(), savedSession.getMemo(), savedSession.getCreatedAt(), savedSession.getUpdatedAt());
     }
 
     public Page<PitchingSessionResponse> getSessions(int page, int size) {
         Page<PitchingSessionEntity> sessions = repository.findAll(PageRequest.of(page, size));
-        return sessions.map(session -> new PitchingSessionResponse(session.getId(), session.getTitle(), session.getMemo()));
+        return sessions.map(session -> new PitchingSessionResponse(session.getId(), session.getTitle(), session.getMemo(), session.getCreatedAt(), session.getUpdatedAt()));
     }
 
     public Optional<PitchingSessionResponse> getSessionById(UUID id) {
         return repository.findById(id)
-                .map(session -> new PitchingSessionResponse(session.getId(), session.getTitle(), session.getMemo()));
+                .map(session -> new PitchingSessionResponse(session.getId(), session.getTitle(), session.getMemo(), session.getCreatedAt(), session.getUpdatedAt()));
     }
 }

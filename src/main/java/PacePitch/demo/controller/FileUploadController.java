@@ -55,11 +55,11 @@ public class FileUploadController {
             Map<String, String> response = new HashMap<>();
             response.put("thumbnailUrl", thumbnailUrl);
             response.put("memo", memo);
-
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
+
     }
 
 }

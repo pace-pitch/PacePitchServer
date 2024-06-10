@@ -1,15 +1,16 @@
 openapi: 3.0.1
 info:
-  title: PacaPitch
-  description: API for PacePitch media server
-  version: 1.0.0
+  title: Pitching and Video Management API
+  description: API for managing pitching sessions, individual pitches, and video uploads.
+  version: "1.0.0"
 servers:
-  - url: http://localhost:8080
+  - url: 'http://3.34.215.141:8080/api'
 paths:
-  /create/session:
+  /sessions:
     post:
       summary: Create a new pitching session
       requestBody:
+        description: Payload for creating a new pitching session
         required: true
         content:
           application/json:
@@ -17,64 +18,38 @@ paths:
               $ref: '#/components/schemas/CreatePitchingSessionRequest'
       responses:
         '200':
-          description: Successfully created a pitching session
+          description: Successfully created a new pitching session
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PitchingSessionEntity'
-
-  /session/{sessionId}/upload/video:
-    post:
-      summary: Upload a video file
-      description: Upload a video file to MinIO and save the URL in the database
-      parameters:
-        - $ref: '#/components/parameters/sessionIdPathParam'
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: The video file to upload
-      responses:
-        '200':
-          description: File uploaded successfully
-          content:
-            application/json:
-              schema:
-                type: string
-        '500':
-          description: File upload failed
-          content:
-            application/json:
-              schema:
-                type: string
-
-  /session/{videoId}/upload/info:
-    post:
-      summary: Update video information
-      parameters:
-        - $ref: '#/components/parameters/videoIdPathParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateVideoInfoRequest'
-      responses:
-        '200':
-          description: Video information updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndividualPitchEntity'
-  /session/{sessionId}/upload/thumb:
+                $ref: '#/components/schemas/PitchingSessionResponse'
+        '400':
+          description: Invalid request data
     get:
-      summary: Get the oldes thumbnail URL and session title
+      summary: Get a paginated list of pitching sessions
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Paginated list of pitching sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PitchingSessionResponse'
+  /sessions/{sessionId}/pitches:
+    post:
+      summary: Create a new pitch within a session
       parameters:
         - in: path
           name: sessionId
@@ -82,88 +57,75 @@ paths:
           schema:
             type: string
             format: uuid
-          description: The ID of the session
+      requestBody:
+        description: Payload for creating a new individual pitch
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualPitchDTO'
       responses:
         '200':
-          description: The oldest thumbnail URL and session title
+          description: Successfully created a new individual pitch
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  thumbnailUrl:
-                    type: string
-                    example: "https://example.com/thumbnail.png"
-                  sessionTitle:
-                    type: string
-                    example: "Session Title"
-        '500':
-          description: Failed to retrieve thumbnail URL and session title
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Failed to retrieve thumbnail URL and session title: error message"
-  /session/upload/thumb/{videoId}:
+                $ref: '#/components/schemas/IndividualPitchResponse'
+        '400':
+          description: Invalid request data
     get:
-      summary: Get the thumbnail URL and memo for a specific video
+      summary: Get a paginated list of individual pitches within a session
       parameters:
         - in: path
-          name: videoId
+          name: sessionId
           required: true
           schema:
             type: string
             format: uuid
-          description: The ID of the video
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
-          description: The thumbnail URL and memo for the video
+          description: Paginated list of individual pitches
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  thumbnailUrl:
-                    type: string
-                    example: "https://example.com/thumbnail.png"
-                  memo:
-                    type: string
-                    example: "This is a memo"
-        '500':
-          description: Failed to retrieve thumbnail URL and memo
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Failed to retrieve thumbnail URL and memo: error message"
-  /session/upload/video/{videoId}:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndividualPitchResponse'
+  /sessions/{sessionId}/pitches/{pitchId}:
     get:
-      summary: Get the video URL for a specific video
+      summary: Get a specific individual pitch by ID within the context of the session
       parameters:
         - in: path
-          name: videoId
+          name: sessionId
           required: true
           schema:
             type: string
             format: uuid
-          description: The ID of the video
+        - in: path
+          name: pitchId
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
-          description: The video URL
+          description: Specific individual pitch details
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: "https://example.com/video.mp4"
-        '500':
-          description: Failed to retrieve video URL
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "Failed to retrieve video URL: error message"
-
-
+                $ref: '#/components/schemas/IndividualPitchResponse'
+        '404':
+          description: Individual pitch not found
 components:
   schemas:
     CreatePitchingSessionRequest:
@@ -173,10 +135,7 @@ components:
           type: string
         memo:
           type: string
-      required:
-        - title
-
-    PitchingSessionEntity:
+    PitchingSessionResponse:
       type: object
       properties:
         id:
@@ -186,76 +145,49 @@ components:
           type: string
         memo:
           type: string
-        createdAt:
-          type: integer
-          format: int64
-        updatedAt:
-          type: integer
-          format: int64
-      required:
-        - title
-
-    CreateVideoInfoRequest:
+    IndividualPitchDTO:
       type: object
       properties:
         velocity:
           type: number
           format: double
         pitchType:
-          type: string
+          $ref: '#/components/schemas/PitchType'
         memo:
           type: string
         throwingHand:
+          $ref: '#/components/schemas/ThrowingHand'
+        videoUrl:
           type: string
-
-    IndividualPitchEntity:
+          format: uri
+    IndividualPitchResponse:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        session:
-          $ref: '#/components/schemas/PitchingSessionEntity'
         velocity:
           type: number
           format: double
         pitchType:
-          type: string
+          $ref: '#/components/schemas/PitchType'
         memo:
           type: string
         throwingHand:
+          $ref: '#/components/schemas/ThrowingHand'
+        videoUrl:
           type: string
-        createdAt:
-          type: integer
-          format: int64
-        updatedAt:
-          type: integer
-          format: int64
-        minioObjectName:
-          type: string
-        minioUrl:
-          type: string
-
-  parameters:
-    videoIdPathParam:
-      name: videoId
-      in: path
-      required: true
-      description: The UUID of the video (primary key of 'individual_pitches' table)
-      schema:
-        type: string
-        format: uuid
-
-    sessionIdPathParam:
-      name: sessionId
-      in: path
-      required: true
-      description: The ID of the session
-      schema:
-        type: string
-        format: uuid
-
-
-
-
+          format: uri
+    PitchType:
+      type: string
+      enum:
+        - Fastball
+        - Curveball
+        - Slider
+    ThrowingHand:
+      type: string
+      enum:
+        - Left
+        - Right
+        - Both
 
