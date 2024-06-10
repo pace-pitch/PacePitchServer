@@ -33,11 +33,12 @@ public class IndividualPitchEntity extends BaseTimeEntity {
     @Column(length = 1024)
     private String thumbnailUrl;
 
-    public IndividualPitchEntity(double velocity, PitchType pitchType, String memo, ThrowingHand throwingHand, PitchingSessionEntity session) {
+    public IndividualPitchEntity(double velocity, PitchType pitchType, String memo, ThrowingHand throwingHand, String videoUrl, PitchingSessionEntity session) {
         this.velocity = velocity;
         this.pitchType = pitchType;
         this.memo = memo;
         this.throwingHand = throwingHand;
+        this.videoUrl = videoUrl;
         this.session = session;
     }
 

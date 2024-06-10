@@ -43,6 +43,7 @@ public class IndividualPitchService {
                 pitchDTO.getPitchType(),
                 pitchDTO.getMemo(),
                 pitchDTO.getThrowingHand(),
+                pitchDTO.getVideoUrl(),
                 session
         );
         session.addPitch(newPitch);
