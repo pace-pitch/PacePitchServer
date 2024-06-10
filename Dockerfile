@@ -1,12 +1,19 @@
-FROM openjdk:17-jdk
+FROM openjdk:17-alpine AS base
 
-# JAR_FILE 변수 정의 -> 기본적으로 jar file이 2개이기 때문에 이름을 특정해야함
-ARG JAR_FILE=./build/libs/demo-0.0.1-SNAPSHOT.jar
+RUN apk add ffmpeg
 
-ADD ${JAR_FILE} docker-auth.jar
+FROM base AS build
 
-# JAR 파일 메인 디렉토리에 복사
-COPY ${JAR_FILE} app.jar
+WORKDIR /build
 
-# 시스템 진입점 정의
-ENTRYPOINT ["java","-jar","/app.jar"]
+COPY . .
+
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -i clean build -x test
+
+FROM build AS run
+
+WORKDIR /app
+
+COPY --from=build /build/build/libs/demo-0.0.1-SNAPSHOT.jar /app/app.jar
+
+ENTRYPOINT ["java","-jar","/app/app.jar"]
