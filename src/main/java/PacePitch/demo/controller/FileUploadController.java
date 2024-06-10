@@ -6,14 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/session")
+@CrossOrigin(origins = "*")
 public class FileUploadController {
 
     @Autowired
@@ -59,7 +58,6 @@ public class FileUploadController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
-
     }
 
 }

@@ -92,26 +92,6 @@ public class VideoService {
         } catch (Exception e) {
             throw new IOException("Failed to upload thumbnail: " + e.getMessage(), e);
         }
-
-        String presignedUrl = minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                        .method(Method.GET)
-                        .bucket(bucketName)
-                        .object(filename)
-                        .expiry(604800, TimeUnit.SECONDS) // 7일 유효 기간
-                        .build()
-        );
-        String thumbnailUrl = minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                        .method(Method.GET)
-                        .bucket(bucketName)
-                        .object(thumbnailFilename)
-                        .expiry(604800, TimeUnit.SECONDS) // 7일 유효 기간
-                        .build()
-        );
-
-        IndividualPitchEntity pitch = new IndividualPitchEntity(session, presignedUrl, thumbnailUrl);
-        individualPitchRepository.save(pitch);
     }
 
     // id를 통한 단일 비디오 조회 메서드
