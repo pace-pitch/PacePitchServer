@@ -47,51 +47,23 @@ public class VideoService {
     }
 
     // 비디오 파일을 업로드하고 MinIO 객체 이름을 데이터베이스에 저장하는 메서드
-    public void uploadVideo(MultipartFile file, UUID sessionId) throws IOException, MinioException, NoSuchAlgorithmException, InvalidKeyException {
-        String filename = file.getOriginalFilename();
-
+    public void uploadVideo(UUID sessionId) throws IOException, MinioException, NoSuchAlgorithmException, InvalidKeyException {
         Optional<PitchingSessionEntity> sessionOpt = pitchingSessionRepository.findById(sessionId);
         if (!sessionOpt.isPresent()) {
             throw new IllegalArgumentException("No session found with ID: " + sessionId);
         }
         PitchingSessionEntity session = sessionOpt.get();
 
-        // 파일 minio에 업로드
-        minioClient.putObject(
-                PutObjectArgs.builder()
+        String presignedUrl = minioClient.getPresignedObjectUrl(
+            GetPresignedObjectUrlArgs.builder()
+                        .method(Method.PUT)
                         .bucket(bucketName)
-                        .object(filename)
-                        .stream(file.getInputStream(), file.getSize(), -1)
-                        .contentType(file.getContentType())
+                        .object(UUID.randomUUID().toString())
+                        .expiry(604800, TimeUnit.SECONDS) // 7일 유효 기간
                         .build()
         );
 
-        // 썸네일 이미지 생성
-        File videoFile = new File(System.getProperty("java.io.tmpdir") + "/" + filename);
-        file.transferTo(videoFile);
-
-        String thumbnailFilename = "thumbnail_" + filename + ".png";
-        File thumbnailFile = new File(System.getProperty("java.io.tmpdir") + "/" + thumbnailFilename);
-
-        try {
-            generateThumbnail(videoFile, thumbnailFile);
-        } catch (Exception e) {
-            throw new IOException("Failed to generate thumbnail: " + e.getMessage(), e);
-        }
-
-        // 썸네일 이미지 업로드
-        try {
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(thumbnailFilename)
-                            .stream(Files.newInputStream(thumbnailFile.toPath()), Files.size(thumbnailFile.toPath()), -1)
-                            .contentType("image/png")
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new IOException("Failed to upload thumbnail: " + e.getMessage(), e);
-        }
+        return presignedUrl;
     }
 
     // id를 통한 단일 비디오 조회 메서드
@@ -115,24 +87,6 @@ public class VideoService {
 
     private IndividualPitchEntity getVideo(UUID id) {
         return individualPitchRepository.findById(id).orElse(null);
-    }
-
-    // FFmpeg로 썸네일 생성
-    private void generateThumbnail(File videoFile, File thumbnailFile) throws IOException {
-        FFmpeg ffmpeg = new FFmpeg("/opt/homebrew/bin/ffmpeg"); // ffmpeg 실행 파일 경로
-        FFprobe ffprobe = new FFprobe("/opt/homebrew/bin/ffprobe"); // ffprobe 실행 파일 경로
-
-        FFmpegProbeResult probeResult = ffprobe.probe(videoFile.getAbsolutePath());
-
-        FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(probeResult)
-                .addOutput(thumbnailFile.getAbsolutePath())
-                .setFrames(1)
-                .setVideoFilter("select='gte(n\\,10)'")
-                .done();
-
-        FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-        executor.createJob(builder).run();
     }
 
     // 세션에 대한 대표 썸네일과 제목 조회

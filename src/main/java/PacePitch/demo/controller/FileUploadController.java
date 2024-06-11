@@ -19,10 +19,10 @@ public class FileUploadController {
 
     // 비디오 파일 업로드 엔드포인트
     @PostMapping("/{sessionId}/upload/video")
-    public ResponseEntity<String> uploadFile(@PathVariable("sessionId") UUID sessionId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadFile(@PathVariable("sessionId") UUID sessionId) {
         try {
-            videoService.uploadVideo(file, sessionId);
-            return ResponseEntity.ok("File uploaded succeessfully");
+            String presignedUrl = videoService.uploadVideo(sessionId);
+            return ResponseEntity.ok(presignedUrl);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
         }
