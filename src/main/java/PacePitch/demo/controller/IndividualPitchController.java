@@ -12,21 +12,20 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/sessions")
-@CrossOrigin(origins = "*")
 public class IndividualPitchController {
 
     @Autowired
     private IndividualPitchService service;
 
     @PostMapping("/{sessionId}/pitches")
-    public ResponseEntity<IndividualPitchResponse> createPitch(@PathVariable UUID sessionId, @RequestBody IndividualPitchDTO individualPitchDTO) {
+    public ResponseEntity<IndividualPitchResponse> createPitch(@PathVariable("sessionId") UUID sessionId, @RequestBody IndividualPitchDTO individualPitchDTO) {
         IndividualPitchResponse newPitch = service.createPitch(sessionId, individualPitchDTO);
         return ResponseEntity.ok(newPitch);
     }
 
     @GetMapping("/{sessionId}/pitches")
     public ResponseEntity<Page<IndividualPitchResponse>> getPitchesBySession(
-            @PathVariable UUID sessionId,
+            @PathVariable("sessionId") UUID sessionId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -35,14 +34,14 @@ public class IndividualPitchController {
     }
 
     @GetMapping("/{sessionId}/pitches/{pitchId}")
-    public ResponseEntity<IndividualPitchResponse> getPitchByIdWithinSession(@PathVariable UUID sessionId, @PathVariable UUID pitchId) {
+    public ResponseEntity<IndividualPitchResponse> getPitchByIdWithinSession(@PathVariable("sessionId") UUID sessionId, @PathVariable UUID pitchId) {
         return service.getPitchById(pitchId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{sessionId}/pitches/{pitchId}")
-    public ResponseEntity<IndividualPitchResponse> updatePitch(@PathVariable UUID sessionId, @PathVariable UUID pitchId, @RequestBody IndividualPitchDTO individualPitchDTO) {
+    public ResponseEntity<IndividualPitchResponse> updatePitch(@PathVariable("sessionId") UUID sessionId, @PathVariable UUID pitchId, @RequestBody IndividualPitchDTO individualPitchDTO) {
         try {
             IndividualPitchResponse updatedPitch = service.updatePitch(pitchId, individualPitchDTO);
             return ResponseEntity.ok(updatedPitch);

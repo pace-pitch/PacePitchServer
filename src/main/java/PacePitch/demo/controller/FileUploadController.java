@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/session")
-@CrossOrigin(origins = "*")
 public class FileUploadController {
 
     @Autowired
