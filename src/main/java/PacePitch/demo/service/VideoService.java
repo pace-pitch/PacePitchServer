@@ -47,7 +47,7 @@ public class VideoService {
     }
 
     // 비디오 파일을 업로드하고 MinIO 객체 이름을 데이터베이스에 저장하는 메서드
-    public void uploadVideo(UUID sessionId) throws IOException, MinioException, NoSuchAlgorithmException, InvalidKeyException {
+    public String uploadVideo(UUID sessionId) throws IOException, MinioException, NoSuchAlgorithmException, InvalidKeyException {
         Optional<PitchingSessionEntity> sessionOpt = pitchingSessionRepository.findById(sessionId);
         if (!sessionOpt.isPresent()) {
             throw new IllegalArgumentException("No session found with ID: " + sessionId);
