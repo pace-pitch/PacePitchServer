@@ -53,13 +53,17 @@ public class VideoService {
             throw new IllegalArgumentException("No session found with ID: " + sessionId);
         }
         PitchingSessionEntity session = sessionOpt.get();
+        
+        Map<String, String> reqParams = new HashMap<String, String>();
+        reqParams.put("response-content-type", "video/quicktime");
 
         String presignedUrl = minioClient.getPresignedObjectUrl(
             GetPresignedObjectUrlArgs.builder()
                         .method(Method.PUT)
                         .bucket(bucketName)
                         .object(UUID.randomUUID().toString())
-                        .expiry(604800, TimeUnit.SECONDS) // 7일 유효 기간
+                        .expiry(1, TimeUnit.HOURS)
+                        .extraQueryParams(reqParams)
                         .build()
         );
 
